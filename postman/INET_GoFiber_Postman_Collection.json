@@ -1,0 +1,551 @@
+{
+  "info": {
+    "name": "INET Workshop - GoFiber API (Exercises 5.0-6)",
+    "_postman_id": "6dba8a01-71d4-4cf3-a07d-1552c8bf2a50",
+    "description": "Postman Collection สำหรับโปรเจกต์ INET_Workshop_GoFiber บน localhost:3000; Basic Auth, Path Param, Query Param, Validator/v10. Credentials เป็นค่าทดสอบ Workshop เท่านั้น อย่าเผยแพร่ Collection ที่มีรหัสผ่านใช้จริง",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{basicUsername}}",
+        "type": "string"
+      },
+      {
+        "key": "password",
+        "value": "{{basicPassword}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "basicUsername",
+      "value": "gofiber",
+      "type": "string"
+    },
+    {
+      "key": "basicPassword",
+      "value": "21022566",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - Exercise 5.0 Basic Auth",
+      "description": "ตรวจ Basic Auth: ไม่ส่งหรือส่งผิดต้องได้ 401",
+      "item": [
+        {
+          "name": "01 - Without Basic Auth → 401",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/fact/5",
+            "description": "ไม่ส่ง Basic Auth เพื่อทดสอบ Middleware",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 401\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"Unauthorized JSON\", function () {",
+                  "    pm.expect(pm.response.json().success).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Wrong Basic Auth → 401",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/fact/5",
+            "description": "ส่ง Username/Password ผิด",
+            "header": [],
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "wrong",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "wrong",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 401\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 - Exercise 5.1 Path Parameter - Factorial",
+      "description": "คำนวณ Factorial ผ่าน /api/v1/fact/:number",
+      "item": [
+        {
+          "name": "01 - Factorial 5 → 120",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/fact/5",
+            "description": "Exercise 5.1 ใช้ Path Parameter :number = 5",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"5! = 120\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data.number).to.eql(5);",
+                  "    pm.expect(data.factorial).to.eql(120);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Factorial 0 → 1",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/fact/0",
+            "description": "ทดสอบ 0! = 1",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"0! = 1\", function () {",
+                  "    pm.expect(pm.response.json().factorial).to.eql(1);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Factorial abc → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/fact/abc",
+            "description": "Path Parameter ไม่ใช่จำนวนเต็ม",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Factorial 21 → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/fact/21",
+            "description": "ขอบเขตตัวเลขถูกจำกัด 0–20",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 - Exercise 5.2-5.3 Query Parameter - ASCII",
+      "description": "Query Parameter tax_id และ Controller Alias c.TestParams",
+      "item": [
+        {
+          "name": "01 - tax_id=Hello → ASCII",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/mean?tax_id=Hello",
+            "description": "Exercise 5.2 ใช้ Query Parameter tax_id=Hello",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"ASCII of Hello\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data.tax_id).to.eql(\"Hello\");",
+                  "    pm.expect(data.ascii).to.eql([72, 101, 108, 108, 111]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - tax_id=123 → ASCII",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/mean?tax_id=123",
+            "description": "เลข 1 2 3 มีรหัส ASCII 49 50 51",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"ASCII of 123\", function () {",
+                  "    pm.expect(pm.response.json().ascii).to.eql([49, 50, 51]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Missing tax_id → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/mean",
+            "description": "ไม่ส่ง Query Parameter ที่ต้องการ",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Non-ASCII Thai → 400",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v3/mean?tax_id=%E0%B9%84%E0%B8%97%E0%B8%A2",
+            "description": "ตัวอย่าง tax_id เป็นภาษาไทย ซึ่ง API รุ่นนี้รับ ASCII เท่านั้น",
+            "header": []
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 - Exercise 6 Registration Validation",
+      "description": "POST JSON ผ่าน Struct และ go-playground/validator/v10",
+      "item": [
+        {
+          "name": "01 - Valid Register → 200",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/register",
+            "description": "Exercise 6 JSON Body ผ่าน BodyParser และ validator/v10",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"username\": \"mean123\",\n  \"password\": \"Test123456\",\n  \"line_id\": \"meanline\",\n  \"phone\": \"0812345678\",\n  \"business_type\": \"Technology\",\n  \"website_name\": \"myshop\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"Registration validation passed\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data.success).to.eql(true);",
+                  "    pm.expect(data.data.email).to.eql(\"test@example.com\");",
+                  "    pm.expect(data.data.username).to.eql(\"mean123\");",
+                  "});",
+                  "",
+                  "pm.test(\"Password not echoed in response\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(JSON.stringify(data)).not.to.include(\"Test123456\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 - Invalid Register → 400",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/register",
+            "description": "ส่ง Email/Username/Password/Phone/BusinessType/WebsiteName ที่ผิดรูปแบบ",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"wrong-email\",\n  \"username\": \"user@name\",\n  \"password\": \"123\",\n  \"line_id\": \"\",\n  \"phone\": \"abc\",\n  \"business_type\": \"\",\n  \"website_name\": \"a\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"Multiple validation errors\", function () {",
+                  "    const data = pm.response.json();",
+                  "    pm.expect(data.success).to.eql(false);",
+                  "    pm.expect(data.errors).to.have.property(\"email\");",
+                  "    pm.expect(data.errors).to.have.property(\"username\");",
+                  "    pm.expect(data.errors).to.have.property(\"password\");",
+                  "    pm.expect(data.errors).to.have.property(\"phone\");",
+                  "    pm.expect(data.errors).to.have.property(\"business_type\");",
+                  "    pm.expect(data.errors).to.have.property(\"website_name\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 - Empty JSON → 400",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/register",
+            "description": "ส่ง Object ว่าง ทำให้ Required Fields ไม่ผ่าน Validation",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 - Malformed JSON → 400",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/register",
+            "description": "ส่ง JSON ที่ Syntax ไม่สมบูรณ์ BodyParser ต้องตอบ 400",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test(\"Response is JSON\", function () {",
+                  "    pm.response.to.be.json;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
