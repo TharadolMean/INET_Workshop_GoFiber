@@ -33,6 +33,8 @@ func newValidator() *validator.Validate {
 	return v
 }
 
+// ข้อ 5.1: รับ Path Parameter จาก /api/v1/fact/:number
+// แล้วคำนวณและคืนค่า Factorial ของตัวเลขนั้น
 // Factorial รับ Path Parameter ซึ่งเป็นค่าที่อยู่ในส่วนเส้นทางของ URL
 func Factorial(ctx *fiber.Ctx) error {
 	// Params อ่านค่าที่แทน :number จาก Route /fact/:number
@@ -59,6 +61,8 @@ func Factorial(ctx *fiber.Ctx) error {
 	})
 }
 
+// ข้อ 5.2: รับ Query Parameter ชื่อ tax_id จาก /api/v3/mean
+// แล้วแปลงตัวอักษรแต่ละตัวเป็นรหัส ASCII
 // TestParams แปลง Query Parameter tax_id เป็นรหัส ASCII ทีละตัว
 func TestParams(ctx *fiber.Ctx) error {
 	// Query Parameter อยู่หลังเครื่องหมาย ? ส่วน Params อยู่ใน Path ของ URL
@@ -96,6 +100,8 @@ func TestParams(ctx *fiber.Ctx) error {
 	})
 }
 
+// ข้อ 6: รับข้อมูลสมัครสมาชิกด้วย POST /api/v1/register
+// ตรวจสอบ JSON และข้อมูลด้วย validator/v10 ก่อนส่งผลลัพธ์กลับ
 // Register อ่าน JSON, ตรวจ Struct ด้วย validator/v10 แล้วส่งกลับเฉพาะข้อมูลที่เปิดเผยได้
 func Register(ctx *fiber.Ctx) error {
 	var request models.RegisterRequest
