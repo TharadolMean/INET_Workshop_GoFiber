@@ -1,0 +1,2150 @@
+{
+  "info": {
+    "name": "GoFiber Workshop 7.0–7.2",
+    "description": "Import แล้วตั้ง baseUrl และ Basic Auth; ต้องตั้ง MySQL ก่อนเรียก API ใหม่ รันแต่ละ folder ตามลำดับ Collection CRUD จะสร้างและ Soft Delete เฉพาะรายการที่สร้างในรอบนั้น ข้อมูลตัวอย่าง 12 รายการตรวจซ้ำก่อน POST; ไม่มีการ Drop/Reset Database",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "basic",
+    "basic": [
+      {
+        "key": "username",
+        "value": "{{basicUsername}}",
+        "type": "string"
+      },
+      {
+        "key": "password",
+        "value": "{{basicPassword}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    },
+    {
+      "key": "basicUsername",
+      "value": "gofiber"
+    },
+    {
+      "key": "basicPassword",
+      "value": "21022566"
+    },
+    {
+      "key": "dogPrimaryID",
+      "value": ""
+    },
+    {
+      "key": "companyPrimaryID",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Exercise 7.0 — Dogs CRUD",
+      "description": "รันตามลำดับ: POST เก็บ dogPrimaryID อัตโนมัติ แล้ว GET/PUT/DELETE; GET /filter ใช้ dog_id แต่ PUT/DELETE ใช้ Primary Key ID",
+      "item": [
+        {
+          "name": "POST Add Dog",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "Expected HTTP 201; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Workshop Dog\",\n  \"dog_id\": 35\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Server assigned ID\", function () { pm.expect(pm.response.json().ID).to.be.above(0); });",
+                  "pm.collectionVariables.set(\"dogPrimaryID\", pm.response.json().ID);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "Expected HTTP 201; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Workshop Dog\",\n  \"dog_id\": 35\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Workshop Dog\",\n  \"dog_id\": 35\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET All Dogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Array of Dogs\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"ID\": 1,\n    \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n    \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n    \"DeletedAt\": null,\n    \"name\": \"Workshop Dog\",\n    \"dog_id\": 35\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "GET Dog By Filter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog/filter?search=35",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Filters by dog_id\", function () { pm.response.json().forEach(function (dog) { pm.expect(dog.dog_id).to.eql(35); }); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog/filter?search=35",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"ID\": 1,\n    \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n    \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n    \"DeletedAt\": null,\n    \"name\": \"Workshop Dog\",\n    \"dog_id\": 35\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "GET Dogs JSON",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog/json",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "const result = pm.response.json();",
+                  "pm.test(\"count matches data and color totals\", function () {",
+                  "  pm.expect(result.name).to.eql(\"golang-test\");",
+                  "  pm.expect(result.data).to.be.an(\"array\");",
+                  "  pm.expect(result.count).to.eql(result.data.length);",
+                  "  pm.expect(result.sum_red + result.sum_green + result.sum_pink + result.sum_nocolor).to.eql(result.count);",
+                  "});",
+                  "pm.test(\"all rows have the correct type and group counts\", function () {",
+                  "  const counts = {red: 0, green: 0, pink: 0, \"no color\": 0};",
+                  "  result.data.forEach(function (dog) {",
+                  "    const id = dog.dog_id;",
+                  "    const expected = id >= 10 && id <= 50 ? \"red\" : id >= 100 && id <= 150 ? \"green\" : id >= 200 && id <= 250 ? \"pink\" : \"no color\";",
+                  "    pm.expect(dog.type).to.eql(expected); counts[expected]++;",
+                  "  });",
+                  "  pm.expect(result.sum_red).to.eql(counts.red);",
+                  "  pm.expect(result.sum_green).to.eql(counts.green);",
+                  "  pm.expect(result.sum_pink).to.eql(counts.pink);",
+                  "  pm.expect(result.sum_nocolor).to.eql(counts[\"no color\"]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog/json",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"count\": 1,\n  \"data\": [\n    {\n      \"name\": \"Workshop Dog\",\n      \"dog_id\": 35,\n      \"type\": \"red\"\n    }\n  ],\n  \"name\": \"golang-test\",\n  \"sum_red\": 1,\n  \"sum_green\": 0,\n  \"sum_pink\": 0,\n  \"sum_nocolor\": 0\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT Update Dog",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/{{dogPrimaryID}}",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Dog\",\n  \"dog_id\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Updated values\", function () { pm.expect(pm.response.json().name).to.eql(\"Updated Dog\"); pm.expect(pm.response.json().dog_id).to.eql(100); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/{{dogPrimaryID}}",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Dog\",\n  \"dog_id\": 100\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Updated Dog\",\n  \"dog_id\": 100\n}"
+            }
+          ]
+        },
+        {
+          "name": "DELETE Dog",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog/{{dogPrimaryID}}",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog/{{dogPrimaryID}}",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Dog deleted\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Exercise 7.0.1 — Company CRUD",
+      "item": [
+        {
+          "name": "POST Company",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/company",
+            "description": "Expected HTTP 201; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"INET Workshop\",\n  \"address\": \"Bangkok\",\n  \"phone\": \"021234567\",\n  \"email\": \"workshop@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "pm.collectionVariables.set(\"companyPrimaryID\", pm.response.json().ID);"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/company",
+                "description": "Expected HTTP 201; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"INET Workshop\",\n  \"address\": \"Bangkok\",\n  \"phone\": \"021234567\",\n  \"email\": \"workshop@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"INET Workshop\",\n  \"address\": \"Bangkok\",\n  \"phone\": \"021234567\",\n  \"email\": \"workshop@example.com\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET All Companies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/company",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"count matches data\", function () { const r = pm.response.json(); pm.expect(r.count).to.eql(r.data.length); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/company",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"count\": 1,\n  \"data\": [\n    {\n      \"ID\": 1,\n      \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n      \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n      \"DeletedAt\": null,\n      \"name\": \"INET Workshop\",\n      \"address\": \"Bangkok\",\n      \"phone\": \"021234567\",\n      \"email\": \"workshop@example.com\"\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Company By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/company/{{companyPrimaryID}}",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/company/{{companyPrimaryID}}",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"INET Workshop\",\n  \"address\": \"Bangkok\",\n  \"phone\": \"021234567\",\n  \"email\": \"workshop@example.com\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "PUT Company",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/company/{{companyPrimaryID}}",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Company\",\n  \"address\": \"Bangkok\",\n  \"phone\": \"\",\n  \"email\": \"workshop@example.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Optional field can be cleared\", function () { pm.expect(pm.response.json().phone).to.eql(\"\"); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/company/{{companyPrimaryID}}",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Company\",\n  \"address\": \"Bangkok\",\n  \"phone\": \"\",\n  \"email\": \"workshop@example.com\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Updated Company\",\n  \"address\": \"Bangkok\",\n  \"phone\": \"\",\n  \"email\": \"workshop@example.com\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "DELETE Company",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/company/{{companyPrimaryID}}",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/company/{{companyPrimaryID}}",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Company deleted\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Exercise 7.0.2 — Deleted Dogs",
+      "item": [
+        {
+          "name": "GET Deleted Dogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog/deleted",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Only soft-deleted rows\", function () { const r = pm.response.json(); pm.expect(r.count).to.eql(r.data.length); r.data.forEach(function (dog) { pm.expect(dog.DeletedAt).not.to.eql(null); }); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog/deleted",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"count\": 1,\n  \"data\": [\n    {\n      \"ID\": 1,\n      \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n      \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n      \"DeletedAt\": \"2026-01-02T00:00:00Z\",\n      \"name\": \"Workshop Dog\",\n      \"dog_id\": 35\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Exercise 7.1 — DogID Range",
+      "item": [
+        {
+          "name": "GET Dogs By Range",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog/range",
+            "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "pm.test(\"Only active DogID 51–99\", function () { const r = pm.response.json(); pm.expect(r.count).to.eql(r.data.length); r.data.forEach(function (dog) { pm.expect(dog.dog_id).to.be.above(50).and.below(100); pm.expect(dog.DeletedAt).to.eql(null); }); });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog/range",
+                "description": "Expected HTTP 200; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"count\": 1,\n  \"data\": [\n    {\n      \"ID\": 1,\n      \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n      \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n      \"DeletedAt\": null,\n      \"name\": \"Workshop Dog\",\n      \"dog_id\": 51\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Exercise 7.2 — Color Summary",
+      "description": "POST ตัวอย่างทีละรายการโดยตรวจชื่อ+dog_id ก่อนเพิ่ม แล้วดูผลรวม; ขอให้รัน folder นี้ตามลำดับ",
+      "item": [
+        {
+          "name": "POST Dog01 (DogID 9)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog01\",\n  \"dog_id\": 9\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=9\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog01\" && row.dog_id === 9; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog01\",\n  \"dog_id\": 9\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog01\",\n  \"dog_id\": 9\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog02 (DogID 10)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog02\",\n  \"dog_id\": 10\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=10\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog02\" && row.dog_id === 10; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog02\",\n  \"dog_id\": 10\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog02\",\n  \"dog_id\": 10\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog03 (DogID 50)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog03\",\n  \"dog_id\": 50\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=50\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog03\" && row.dog_id === 50; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog03\",\n  \"dog_id\": 50\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog03\",\n  \"dog_id\": 50\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog04 (DogID 51)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog04\",\n  \"dog_id\": 51\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=51\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog04\" && row.dog_id === 51; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog04\",\n  \"dog_id\": 51\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog04\",\n  \"dog_id\": 51\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog05 (DogID 99)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog05\",\n  \"dog_id\": 99\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=99\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog05\" && row.dog_id === 99; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog05\",\n  \"dog_id\": 99\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog05\",\n  \"dog_id\": 99\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog06 (DogID 100)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog06\",\n  \"dog_id\": 100\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=100\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog06\" && row.dog_id === 100; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog06\",\n  \"dog_id\": 100\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog06\",\n  \"dog_id\": 100\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog07 (DogID 150)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog07\",\n  \"dog_id\": 150\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=150\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog07\" && row.dog_id === 150; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog07\",\n  \"dog_id\": 150\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog07\",\n  \"dog_id\": 150\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog08 (DogID 151)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog08\",\n  \"dog_id\": 151\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=151\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog08\" && row.dog_id === 151; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog08\",\n  \"dog_id\": 151\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog08\",\n  \"dog_id\": 151\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog09 (DogID 200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog09\",\n  \"dog_id\": 200\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=200\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog09\" && row.dog_id === 200; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog09\",\n  \"dog_id\": 200\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog09\",\n  \"dog_id\": 200\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog10 (DogID 250)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog10\",\n  \"dog_id\": 250\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=250\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog10\" && row.dog_id === 250; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog10\",\n  \"dog_id\": 250\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog10\",\n  \"dog_id\": 250\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog11 (DogID 251)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog11\",\n  \"dog_id\": 251\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=251\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog11\" && row.dog_id === 251; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog11\",\n  \"dog_id\": 251\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog11\",\n  \"dog_id\": 251\n}"
+            }
+          ]
+        },
+        {
+          "name": "POST Dog12 (DogID 999)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog12\",\n  \"dog_id\": 999\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.execution || !pm.execution.skipRequest) { throw new Error(\"Update Postman to a version supporting pm.execution.skipRequest()\"); }",
+                  "pm.sendRequest({",
+                  "  url: pm.variables.replaceIn(\"{{baseUrl}}/api/v1/dog/filter?search=999\"),",
+                  "  method: \"GET\",",
+                  "  auth: {type: \"basic\", basic: [{key: \"username\", value: pm.variables.get(\"basicUsername\"), type: \"string\"}, {key: \"password\", value: pm.variables.get(\"basicPassword\"), type: \"string\"}]}",
+                  "}, function (error, response) {",
+                  "  if (error || !response || (response.code !== 200 && response.code !== 404)) { pm.execution.skipRequest(); throw new Error(\"Cannot verify existing fixtures; check MySQL and Basic Auth\"); }",
+                  "  if (response.code === 200 && response.json().some(function (row) { return row.name === \"Dog12\" && row.dog_id === 999; })) { pm.execution.skipRequest(); }",
+                  "});"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 201\", function () { pm.response.to.have.status(201); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "เพิ่มข้อมูลตัวอย่างเมื่อยังไม่มีชื่อและ dog_id คู่นี้ในข้อมูลที่ยังไม่ถูกลบ Pre-request จะตรวจผ่าน /filter และ skip หากมีแล้ว ต้องใช้ Postman รุ่นที่รองรับ pm.execution.skipRequest()",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Dog12\",\n  \"dog_id\": 999\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ID\": 1,\n  \"CreatedAt\": \"2026-01-01T00:00:00Z\",\n  \"UpdatedAt\": \"2026-01-01T00:00:00Z\",\n  \"DeletedAt\": null,\n  \"name\": \"Dog12\",\n  \"dog_id\": 999\n}"
+            }
+          ]
+        },
+        {
+          "name": "GET Dogs JSON With Color Summary",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog/json",
+            "description": "ผลรวม 12 / 2 / 2 / 2 / 6 ใช้เมื่อมีเฉพาะ fixture 12 รายการที่ยังไม่ถูกลบ หากมีข้อมูลอื่น ผลรวมต้องนับรวมข้อมูลเหล่านั้นด้วย"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });",
+                  "const result = pm.response.json();",
+                  "pm.test(\"count matches data and color totals\", function () {",
+                  "  pm.expect(result.name).to.eql(\"golang-test\");",
+                  "  pm.expect(result.data).to.be.an(\"array\");",
+                  "  pm.expect(result.count).to.eql(result.data.length);",
+                  "  pm.expect(result.sum_red + result.sum_green + result.sum_pink + result.sum_nocolor).to.eql(result.count);",
+                  "});",
+                  "pm.test(\"all rows have the correct type and group counts\", function () {",
+                  "  const counts = {red: 0, green: 0, pink: 0, \"no color\": 0};",
+                  "  result.data.forEach(function (dog) {",
+                  "    const id = dog.dog_id;",
+                  "    const expected = id >= 10 && id <= 50 ? \"red\" : id >= 100 && id <= 150 ? \"green\" : id >= 200 && id <= 250 ? \"pink\" : \"no color\";",
+                  "    pm.expect(dog.type).to.eql(expected); counts[expected]++;",
+                  "  });",
+                  "  pm.expect(result.sum_red).to.eql(counts.red);",
+                  "  pm.expect(result.sum_green).to.eql(counts.green);",
+                  "  pm.expect(result.sum_pink).to.eql(counts.pink);",
+                  "  pm.expect(result.sum_nocolor).to.eql(counts[\"no color\"]);",
+                  "});",
+                  "pm.test(\"All 12 workshop fixtures are present\", function () {",
+                  "  const fixtures = [{\"name\":\"Dog01\",\"dog_id\":9},{\"name\":\"Dog02\",\"dog_id\":10},{\"name\":\"Dog03\",\"dog_id\":50},{\"name\":\"Dog04\",\"dog_id\":51},{\"name\":\"Dog05\",\"dog_id\":99},{\"name\":\"Dog06\",\"dog_id\":100},{\"name\":\"Dog07\",\"dog_id\":150},{\"name\":\"Dog08\",\"dog_id\":151},{\"name\":\"Dog09\",\"dog_id\":200},{\"name\":\"Dog10\",\"dog_id\":250},{\"name\":\"Dog11\",\"dog_id\":251},{\"name\":\"Dog12\",\"dog_id\":999}];",
+                  "  const rows = pm.response.json().data;",
+                  "  fixtures.forEach(function (fixture) { pm.expect(rows.some(function (row) { return row.name === fixture.name && row.dog_id === fixture.dog_id; })).to.eql(true); });",
+                  "});",
+                  "pm.test(\"Expected totals when only the 12 fixtures are active\", function () {",
+                  "  const r = pm.response.json();",
+                  "  if (r.count === 12) { pm.expect([r.sum_red, r.sum_green, r.sum_pink, r.sum_nocolor]).to.eql([2, 2, 2, 6]); }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog/json",
+                "description": "ผลรวม 12 / 2 / 2 / 2 / 6 ใช้เมื่อมีเฉพาะ fixture 12 รายการที่ยังไม่ถูกลบ หากมีข้อมูลอื่น ผลรวมต้องนับรวมข้อมูลเหล่านั้นด้วย"
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"count\": 12,\n  \"data\": [\n    {\n      \"name\": \"Dog01\",\n      \"dog_id\": 9,\n      \"type\": \"no color\"\n    },\n    {\n      \"name\": \"Dog02\",\n      \"dog_id\": 10,\n      \"type\": \"red\"\n    },\n    {\n      \"name\": \"Dog03\",\n      \"dog_id\": 50,\n      \"type\": \"red\"\n    },\n    {\n      \"name\": \"Dog04\",\n      \"dog_id\": 51,\n      \"type\": \"no color\"\n    },\n    {\n      \"name\": \"Dog05\",\n      \"dog_id\": 99,\n      \"type\": \"no color\"\n    },\n    {\n      \"name\": \"Dog06\",\n      \"dog_id\": 100,\n      \"type\": \"green\"\n    },\n    {\n      \"name\": \"Dog07\",\n      \"dog_id\": 150,\n      \"type\": \"green\"\n    },\n    {\n      \"name\": \"Dog08\",\n      \"dog_id\": 151,\n      \"type\": \"no color\"\n    },\n    {\n      \"name\": \"Dog09\",\n      \"dog_id\": 200,\n      \"type\": \"pink\"\n    },\n    {\n      \"name\": \"Dog10\",\n      \"dog_id\": 250,\n      \"type\": \"pink\"\n    },\n    {\n      \"name\": \"Dog11\",\n      \"dog_id\": 251,\n      \"type\": \"no color\"\n    },\n    {\n      \"name\": \"Dog12\",\n      \"dog_id\": 999,\n      \"type\": \"no color\"\n    }\n  ],\n  \"name\": \"golang-test\",\n  \"sum_red\": 2,\n  \"sum_green\": 2,\n  \"sum_pink\": 2,\n  \"sum_nocolor\": 6\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Validation and Authentication",
+      "item": [
+        {
+          "name": "Missing Basic Auth",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog",
+            "description": "Expected HTTP 401; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog",
+                "description": "Expected HTTP 401; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Unauthorized\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Wrong Basic Auth",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog",
+            "description": "Expected HTTP 401; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "gofiber",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "wrong",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 401\", function () { pm.response.to.have.status(401); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog",
+                "description": "Expected HTTP 401; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+                "auth": {
+                  "type": "basic",
+                  "basic": [
+                    {
+                      "key": "username",
+                      "value": "gofiber",
+                      "type": "string"
+                    },
+                    {
+                      "key": "password",
+                      "value": "wrong",
+                      "type": "string"
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Unauthorized\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Invalid Dog Body",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/dog/",
+            "description": "Expected HTTP 400; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"dog_id\": -1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/dog/",
+                "description": "Expected HTTP 400; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"\",\n  \"dog_id\": -1\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"name is required (max 100 characters); dog_id is required and must be a non-negative integer\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Invalid Dog ID",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/dog/abc",
+            "description": "Expected HTTP 400; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/api/v1/dog/abc",
+                "description": "Expected HTTP 400; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"id must be a positive integer\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Invalid Company Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/company",
+            "description": "Expected HTTP 400; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Company\",\n  \"email\": \"invalid\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", function () { pm.response.to.have.status(400); });",
+                  "pm.test(\"JSON response\", function () { pm.response.to.be.json; });"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Expected response example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": "{{baseUrl}}/api/v1/company",
+                "description": "Expected HTTP 400; ดูตัวอย่าง response ที่บันทึกไว้ ข้อมูลจริงอาจต่างกันตามฐานข้อมูล",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Company\",\n  \"email\": \"invalid\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": false,\n  \"message\": \"name is required (max 100); address max 255; phone max 30; email must be valid (max 254)\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

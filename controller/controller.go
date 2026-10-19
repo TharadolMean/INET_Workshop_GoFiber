@@ -16,7 +16,6 @@ var validate = newValidator()
 func newValidator() *validator.Validate {
 	v := validator.New()
 
-	// Regex เหล่านี้เป็นข้อกำหนดเพิ่มเติมของตัวอย่าง Workshop
 	_ = v.RegisterValidation("username", func(fl validator.FieldLevel) bool {
 		matched, _ := regexp.MatchString(`^[A-Za-z0-9_-]+$`, fl.Field().String())
 		return matched
@@ -38,7 +37,7 @@ func newValidator() *validator.Validate {
 // Factorial รับ Path Parameter ซึ่งเป็นค่าที่อยู่ในส่วนเส้นทางของ URL
 func Factorial(ctx *fiber.Ctx) error {
 	// Params อ่านค่าที่แทน :number จาก Route /fact/:number
-	numberText := ctx.Params("number")
+	numberText := ctx.Params("number", "5")
 
 	// URL เป็นข้อความ จึงแปลงเป็น int ก่อนนำไปคำนวณ
 	number, err := strconv.Atoi(numberText)
@@ -50,9 +49,9 @@ func Factorial(ctx *fiber.Ctx) error {
 	}
 
 	// เริ่มผลคูณที่ 1 แล้วคูณเลขตั้งแต่ 1 ถึง number ด้วย for Loop
-	factorial := int64(1)
+	factorial := 1
 	for i := 1; i <= number; i++ {
-		factorial *= int64(i)
+		factorial *= i
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
